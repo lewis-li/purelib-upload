@@ -12,6 +12,7 @@ class Upload {
 
     /**
      * 设置场景
+     * 
      * @param string $name 场景名称
      * @param array $config 场景配置,可设置项与upload方法$config参数一致
      */
@@ -21,6 +22,7 @@ class Upload {
 
     /**
      * 根据错误码获得错误信息
+     * 
      * @param int $code
      * @return string|null
      */
@@ -54,6 +56,7 @@ class Upload {
 
     /**
      * 获得错误
+     * 
      * @param string $name,如果为空，则返回所有错误信息
      */
     public static function getError($name=null) {
@@ -215,6 +218,7 @@ class Upload {
 
     /**
      * 获得文件验证错误信息
+     * 
      * @param string $rule 验证规则名
      * @return string|null
      */
@@ -231,7 +235,7 @@ class Upload {
     }
 
     /**
-     *
+     * 验证
      * @param string $name
      * @param array $condition 要验证的规则,规则如下
      *     - notempty: 不为空 e.g notempty=>true
@@ -303,6 +307,7 @@ class Upload {
 
     /**
      * 验证文件类型
+     * 
      * @param mixed $files
      * @return boolean
      */

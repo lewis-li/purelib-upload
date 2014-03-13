@@ -15,14 +15,14 @@ class FileInfo extends \SplFileInfo {
         $this->dir = $dir;
         parent::__construct($file);
     }
-    
+
     /**
      * 获得基础路径
      */
     public function getBasePath() {
         return $this->basePath;
     }
-    
+
     /**
      * 获得存储目录
      */
@@ -42,6 +42,7 @@ class FileInfo extends \SplFileInfo {
 
     /**
      * 获得文件Mime类型
+     * 
      * @return string
      */
     public function getMimeType() {
@@ -58,7 +59,7 @@ class FileInfo extends \SplFileInfo {
         } else {
             $disabled = explode(',', ini_get('disable_functions'));
             if (!in_array('exec', $disabled)) {
-                $mimetype = exec(trim( 'file -bi ' . escapeshellarg ($file )));
+                $mimetype = exec(trim('file -bi ' . escapeshellarg ($file)));
                 return substr($mimetype, 0, strpos($mimetype, ';'));
             }
         }

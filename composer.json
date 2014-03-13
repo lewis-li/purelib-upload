@@ -1,3 +1,9 @@
 {
-    "name": "purelib/upload"
+    "name": "purelib/upload",
+    "description": "一个独立的文件上传库，无依赖，简单易用API.",
+    "autoload": {
+        "psr-4": {
+            "PureLib\\Upload\\": ""
+        }
+    }
 }

@@ -19,6 +19,16 @@ class Upload {
     public static function setScene($name, array $config) {
         self::$scenes[$name] = $config;
     }
+    
+    /**
+     * 获得场景配置信息
+     * 
+     * @param string $name
+     * @return Ambigous <boolean, array>
+     */
+    public static function getScene($name) {
+        return isset(self::$scenes[$name]) ? new \ArrayObject(self::$scenes[$name], \ArrayObject::STD_PROP_LIST+\ArrayObject::ARRAY_AS_PROPS) : false;
+    }
 
     /**
      * 根据错误码获得错误信息

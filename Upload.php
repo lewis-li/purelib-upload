@@ -104,7 +104,10 @@ class Upload {
      *   - error 上传失败后执行的回调函数,传入参数为错误信息
      * @return false | fileinfo文件信息对象
      */
-    public static function upload($name, array $config=array()) {
+    public static function upload($name=null, array $config=array()) {
+        if ($name === null) {
+            self::namelessUpload($config);
+        }
 
         if (isset($config['scene']) && isset(self::$scenes[$config['scene']])) {
             $config = array_merge(self::$scenes[$config['scene']], $config);

@@ -12,17 +12,17 @@ class Upload {
 
     /**
      * 设置场景
-     * 
+     *
      * @param string $name 场景名称
      * @param array $config 场景配置,可设置项与upload方法$config参数一致
      */
     public static function setScene($name, array $config) {
         self::$scenes[$name] = $config;
     }
-    
+
     /**
      * 获得场景配置信息
-     * 
+     *
      * @param string $name
      * @return Ambigous <boolean, array>
      */
@@ -32,7 +32,7 @@ class Upload {
 
     /**
      * 根据错误码获得错误信息
-     * 
+     *
      * @param int $code
      * @return string|null
      */
@@ -66,7 +66,7 @@ class Upload {
 
     /**
      * 获得错误
-     * 
+     *
      * @param string $name,如果为空，则返回所有错误信息
      */
     public static function getError($name=null) {
@@ -105,9 +105,6 @@ class Upload {
      * @return false | fileinfo文件信息对象
      */
     public static function upload($name=null, array $config=array()) {
-        if ($name === null) {
-            self::namelessUpload($config);
-        }
 
         if (isset($config['scene']) && isset(self::$scenes[$config['scene']])) {
             $config = array_merge(self::$scenes[$config['scene']], $config);
@@ -207,6 +204,79 @@ class Upload {
     }
 
     /**
+     * 上传流数据
+     * @param resource $stream
+     * @param array $config
+     * @return boolean|FileInfo
+     */
+    public static function uploadStream($stream=null, $config=array()) {
+        if (isset($config['scene']) && isset(self::$scenes[$config['scene']])) {
+            $config = array_merge(self::$scenes[$config['scene']], $config);
+        } elseif(isset(self::$scenes['public'])) {
+            $config = array_merge(self::$scenes['public'], $config);
+        }
+
+        $error_handler = isset($config['error']) && is_callable($config['error'])
+        ? $config['error'] : function (){
+        };
+        $success_handler = isset($config['success']) && is_callable($config['success'])
+        ? $config['success'] : function (){
+        };
+
+        if ($stream === null) {
+            $stream = fopen('php://input', 'rb');
+        }
+
+        $header = fread($stream, 15);
+
+        $stream = $header . stream_get_contents($stream);
+
+        $ext = \PureLib\Upload\MimeType::getExtensionByStreamHeader($header);
+
+        if ($ext) {
+            $ext = '.' . $ext;
+        }
+
+        $dest = uniqid(time()) . $ext;
+
+        $dir = isset($config['dir']) ? $config['dir'] : '';
+        $base_path = isset($config['base_path']) ? $config['base_path'] : '';
+        $upload_path = (empty($base_path) ? $base_path : $base_path.'/').$dir;
+        // e:/abc/test
+        // test
+
+        if (is_dir($upload_path)){
+            //test/test.jpg
+            $upload = fopen($upload_path . '/' .$dest, 'w+b');
+            $check_upload = fwrite($upload, $stream);
+            fclose($upload);
+
+            if ($check_upload) {
+                $result = new \SplFileInfo( $upload_path.'/'.$dest);
+                // $result = new FileInfo($dest, $base_path, $dir);
+                goto success;
+            } else {
+                // @todo lewis $storer
+                self::$errors[$name] = $storer->getError();
+                goto error;
+            }
+        }
+
+        goto error;
+        error: {
+            call_user_func($error_handler, self::$errors[$name]);
+            return false;
+        }
+
+        success: {
+            call_user_func($success_handler, $result);
+            //返回流
+            return $stream;
+            // return $result;
+        }
+    }
+
+    /**
      * 判断是否有文件上传项
      */
     public static function hasUpload($name=null) {
@@ -231,7 +301,7 @@ class Upload {
 
     /**
      * 获得文件验证错误信息
-     * 
+     *
      * @param string $rule 验证规则名
      * @return string|null
      */
@@ -320,7 +390,7 @@ class Upload {
 
     /**
      * 验证文件类型
-     * 
+     *
      * @param mixed $files
      * @return boolean
      */

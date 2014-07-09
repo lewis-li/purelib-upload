@@ -42,7 +42,7 @@ class FileInfo extends \SplFileInfo {
 
     /**
      * 获得文件Mime类型
-     * 
+     *
      * @return string
      */
     public function getMimeType() {
